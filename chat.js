@@ -192,52 +192,59 @@ async function submitRequest() {
   // change autoScroller to keep track of our new responseDiv
   autoScroller.observe(responseDiv);
 
-  postRequest(data, interrupt.signal)
+postRequest(data, interrupt.signal)
     .then(async response => {
-      await getResponse(response, parsedResponse => {
-        let word = parsedResponse.response;
-        if (parsedResponse.done) {
-          chatHistory.context = parsedResponse.context;
-          // Copy button
-          let copyButton = document.createElement('button');
-          copyButton.className = 'btn btn-secondary copy-button';
-          copyButton.innerHTML = clipboardIcon;
-          copyButton.onclick = () => {
-            navigator.clipboard.writeText(responseDiv.hidden_text).then(() => {
-              console.log('Text copied to clipboard');
-            }).catch(err => {
-              console.error('Failed to copy text:', err);
-            });
-          };
-          responseDiv.appendChild(copyButton);
-        }
-        // add word to response
-        if (word != undefined && word != "") {
-          if (responseDiv.hidden_text == undefined){
-            responseDiv.hidden_text = "";
-          }
-          responseDiv.hidden_text += word;
-          responseDiv.innerHTML = DOMPurify.sanitize(marked.parse(responseDiv.hidden_text)); // Append word to response container
-        }
-      });
+        await getResponse(response, parsedResponse => {
+            let word = parsedResponse.response;
+            if (parsedResponse.done) {
+                chatHistory.context = parsedResponse.context;
+
+                // Create copy button
+                let copyButton = document.createElement('button');
+                copyButton.className = 'btn btn-secondary copy-button';
+                copyButton.innerHTML = clipboardIcon;
+
+                // Function to handle clipboard copy
+                const copyToClipboard = async (text) => {
+                    try {
+                        await navigator.clipboard.writeText(text);
+                        console.log('Text copied to clipboard');
+                    } catch (err) {
+                        console.error('Failed to copy text:', err);
+                    }
+                };
+
+                // Add click handler to copy button
+                copyButton.onclick = () => {
+                    copyToClipboard(responseDiv.hidden_text);
+                };
+
+                // Append copy button to responseDiv
+                responseDiv.appendChild(copyButton);
+            }
+
+            // Append word to response
+            if (word !== undefined && word !== "") {
+                if (responseDiv.hidden_text === undefined) {
+                    responseDiv.hidden_text = "";
+                }
+                responseDiv.hidden_text += word;
+                responseDiv.innerHTML = DOMPurify.sanitize(marked.parse(responseDiv.hidden_text));
+            }
+        });
     })
     .then(() => {
-      stopButton.remove(); // Remove stop button from DOM now that all text has been generated
-      spinner.remove();
+        stopButton.remove(); // Remove stop button from DOM now that all text has been generated
+        spinner.remove();
     })
     .catch(error => {
-      if (error !== 'Stop button pressed') {
-        console.error(error);
-      }
-      stopButton.remove();
-      spinner.remove();
+        if (error !== 'Stop button pressed') {
+            console.error(error);
+        }
+        stopButton.remove();
+        spinner.remove();
     });
 
-  // Clear user input
-  const element = document.getElementById('user-input');
-  element.value = '';
-  $(element).css("height", textBoxBaseHeight + "px");
-}
 
 // Event listener for Ctrl + Enter or CMD + Enter
 document.getElementById('user-input').addEventListener('keydown', function (e) {
