@@ -202,7 +202,6 @@ async function submitRequest() {
           let copyButton = document.createElement('button');
           copyButton.className = 'btn btn-secondary copy-button';
           copyButton.innerHTML = clipboardIcon;
-          await navigator.clipboard.writeText(responseDiv.hidden_text);
           copyButton.onclick = () => {
             navigator.clipboard.writeText(responseDiv.hidden_text).then(() => {
               console.log('Text copied to clipboard');
