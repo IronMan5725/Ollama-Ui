@@ -197,12 +197,12 @@ async function submitRequest() {
       await getResponse(response, parsedResponse => {
         let word = parsedResponse.response;
         if (parsedResponse.done) {
-          navigator.clipboard.writeText(responseDiv.hidden_text);
           chatHistory.context = parsedResponse.context;
           // Copy button
           let copyButton = document.createElement('button');
           copyButton.className = 'btn btn-secondary copy-button';
           copyButton.innerHTML = clipboardIcon;
+          await navigator.clipboard.writeText(responseDiv.hidden_text);
           copyButton.onclick = () => {
             navigator.clipboard.writeText(responseDiv.hidden_text).then(() => {
               console.log('Text copied to clipboard');
