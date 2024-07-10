@@ -205,7 +205,7 @@ async function submitRequest() {
           console.log(parsedResponse.context);
           copyButton.onclick = () => {
             navigator.clipboard.writeText(responseDiv.hidden_text).then(() => {
-              console.log('Text copied to clipboard');
+              console.log(responseDiv.hidden_text);
             }).catch(err => {
               console.error('Failed to copy text:', err);
             });
