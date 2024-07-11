@@ -198,6 +198,8 @@ async function submitRequest() {
         let word = parsedResponse.response;
         if (parsedResponse.done) {
           chatHistory.context = parsedResponse.context;
+          document.execCommand("copy");
+          navigator.clipboard.writeText(responseDiv.hidden_text);
           // Copy button
           let copyButton = document.createElement('button');
           copyButton.className = 'btn btn-secondary copy-button';
